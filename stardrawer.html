@@ -12,11 +12,13 @@
 <body>
     <!-- Einfaches HTML5 Audio-Element -->
     <audio id="background-music" src="music/embrace-364091.mp3" preload="auto" loop></audio>
+    <audio id ="sphere-music" src="music/jungle-waves-drumampbass-electronic-inspiring-promo-345013.mp3" preload="auto" loop></audio>
     
     <a-scene>
         <!-- Space Environment -->
         <a-entity environment="preset: starry; ground: none; groundColor: #000000;"></a-entity>
         <a-sky color="#000011"></a-sky>
+
 
         <!-- Würfel in der Szene -->
         <a-box position="0 0.5 -5" color="#4CC3D9" scale="0.8 0.8 0.8">
@@ -24,6 +26,7 @@
         
         <a-sphere position="3 0.5 -5" color="red" scale="0.6 0.6 0.6">
         </a-sphere>
+
         <!-- Kamera mit Blick-Interaktion -->
         <a-entity camera look-controls wasd-controls position="0 1.6 0">
             <a-cursor fuse="true" fuse-timeout="1500"></a-cursor>
