@@ -1,0 +1,49 @@
+/* Immersiver Musikplayer Styles */
+
+body { 
+  margin: 0; 
+  background: 
+    radial-gradient(circle at 60% 10%, rgba(134,33,187,0.25) 0%, rgba(24,16,36,0.85) 50%, #181024 100%),
+    linear-gradient(180deg, rgba(58,24,82,0.5) 0%, #181024 100%);
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  font-family: 'Arial', sans-serif;
+}
+
+.loading { 
+  position: fixed; 
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%); 
+  color: white; 
+  font-family: Arial; 
+  z-index: 1000; 
+  font-size: 18px;
+  text-shadow: 0 0 10px rgba(29, 185, 84, 0.5);
+}
+
+/* Icons nicht-klickbar machen */
+.no-click {
+  pointer-events: none !important;
+}
+
+/* A-Frame Scene Anpassungen */
+.a-canvas {
+  border-radius: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .loading {
+    font-size: 16px;
+  }
+}
+
+/* VR-Modus Optimierungen */
+@media (max-width: 480px) {
+  .loading {
+    font-size: 14px;
+  }
+} 
