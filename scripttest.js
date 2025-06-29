@@ -13,6 +13,7 @@ let currentRound = 0;
 let acceptingInput = false;
 let gameStarted = false;
 let isFirstGame = true;
+let failedAttempts = 0; // Zähler für Fehlversuche
 
 let noteContainer, btnStart, endScreen, btnRestart, scoreboard, infoText, scoreText, roundText, menu;
 
@@ -44,6 +45,7 @@ function startGame() {
   currentRound = 0;
   acceptingInput = false;
   gameStarted = true;
+  failedAttempts = 0; // Fehlversuche zurücksetzen
 
   // Sequenz nur beim ersten Spiel erstellen
   if (isFirstGame) {
@@ -57,7 +59,7 @@ function startGame() {
   showElement("#scoreboard");
 
   // Scoreboard aktualisieren
-  updateInfo("Höre zu...");
+  updateInfo("Hoere zu...");
   updateScore(0);
   updateRound(0);
   
@@ -77,7 +79,7 @@ function nextRound() {
   acceptingInput = false;
   userInput = [];
   
-  updateInfo("Höre zu...");
+  updateInfo("Hoere zu...");
   updateRound(currentRound);
 
   // Nur einen neuen Ton zur bestehenden Sequenz hinzufügen
@@ -201,11 +203,31 @@ function handleUserInput(i) {
   const expectedNote = sequence[currentInputIndex];
   
   if (expectedNote !== i) {
-    // Falsch - aber nochmal versuchen lassen
+    // Falsch - Fehlversuch zählen
     console.log(`Falsch! Erwartet: ${expectedNote}, Bekommen: ${i}`);
     document.getElementById("fail-sound").play();
     
-    updateInfo("Falsch! Höre nochmal zu...");
+    failedAttempts++;
+    
+    // Nach 3 Fehlversuchen: Game Over
+    if (failedAttempts >= 3) {
+      updateInfo("Game Over! Zu viele Fehler.");
+      acceptingInput = false;
+      gameStarted = false;
+      
+      // Cubes entfernen
+      if (noteContainer) {
+        noteContainer.innerHTML = '';
+      }
+      
+      setTimeout(() => {
+        gameOver(false);
+      }, 1500);
+      return;
+    }
+    
+    // Noch Versuche übrig - nochmal versuchen lassen
+    updateInfo(`Falsch! Noch ${3 - failedAttempts} Versuche. Höre nochmal zu...`);
     acceptingInput = false;
     userInput = []; // User-Input zurücksetzen
     
@@ -240,7 +262,7 @@ function handleUserInput(i) {
     }
     
     // Nächste Runde
-    updateInfo("Richtig! Nächste Runde...");
+    updateInfo("Richtig! Naechste Runde...");
     updateScore(currentRound);
     setTimeout(() => {
       if (gameStarted) nextRound();
@@ -266,7 +288,9 @@ function gameOver(won = false) {
   if (won) {
     document.getElementById("endText").setAttribute("value", "🎉 Glückwunsch! Du hast alle 4 Runden geschafft!");
   } else {
-    document.getElementById("endText").setAttribute("value", `Game Over! Du hast ${currentRound} Runden geschafft.`);
+    // Zeige die tatsächlich erreichte Runde (currentRound - 1, da currentRound bei nextRound erhöht wird)
+    const achievedRound = Math.max(0, currentRound - 1);
+    document.getElementById("endText").setAttribute("value", `Game Over! Du hast ${achievedRound} Runden geschafft.`);
   }
 }
 
@@ -301,6 +325,7 @@ function restartGame() {
   acceptingInput = false;
   gameStarted = false;
   isFirstGame = true;
+  failedAttempts = 0; // Fehlversuche zurücksetzen
 
   // UI zurücksetzen
   hideElement("#endScreen");
