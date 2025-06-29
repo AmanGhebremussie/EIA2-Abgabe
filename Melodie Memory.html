@@ -5,10 +5,12 @@
   <title>Melodie Memory VR</title>
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
+  
   <script src="scripttest.js" defer></script>
   <link rel="stylesheet" href="stylesheet.css">
 </head>
 <body>
+
   <a-scene>
     <a-assets>
       <audio id="sound0" src="sounds/static_audio_voice_1.mp3" preload="auto"></audio>
@@ -16,13 +18,14 @@
       <audio id="sound2" src="sounds/static_audio_voice_3.mp3" preload="auto"></audio>
       <audio id="sound3" src="sounds/static_audio_voice_4.mp3" preload="auto"></audio>
       <audio id="sound4" src="sounds/static_audio_voice_5.mp3" preload="auto"></audio>
+    
       
       <audio id="click-sound" src="sounds/ui-pop-sound-316482.mp3"></audio>
       <audio id="fail-sound" src="sounds/wrong-47985.mp3"></audio>
     </a-assets>
     
     <!-- Sternennacht-Umgebung -->
-    <a-entity environment="preset: starry; skyType: atmosphere; skyColor: #000033; horizonColor: #1a1a3a; groundColor: #0a0a1a; lighting: point"></a-entity>
+    <a-entity environment="preset: starry; skyType: atmosphere; grid: none; skyColor: #000033; horizonColor: #1a1a3a; groundColor: #0a0a1a; lighting: point"></a-entity>
 
     <!-- Bunte Ambient-Lichter -->
     <a-light type="point" position="3 4 0" intensity="0.6" color="#FF6B6B"></a-light>

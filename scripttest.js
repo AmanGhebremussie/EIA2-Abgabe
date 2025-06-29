@@ -20,6 +20,7 @@ let noteContainer, btnStart, endScreen, btnRestart, scoreboard, infoText, scoreT
 window.addEventListener("DOMContentLoaded", () => {
   initializeElements();
   setupEventListeners();
+  create3DStars(); // 3D Sterne erstellen
 });
 
 function initializeElements() {
@@ -227,7 +228,7 @@ function handleUserInput(i) {
     }
     
     // Noch Versuche übrig - nochmal versuchen lassen
-    updateInfo(`Falsch! Noch ${3 - failedAttempts} Versuche. Höre nochmal zu...`);
+    updateInfo(`Falsch! Noch ${3 - failedAttempts} Versuche. Hoere nochmal zu...`);
     acceptingInput = false;
     userInput = []; // User-Input zurücksetzen
     
@@ -246,7 +247,7 @@ function handleUserInput(i) {
     
     // Alle 4 Runden geschafft?
     if (currentRound >= 4) {
-      updateInfo("🎉 Glückwunsch! Du hast alle 4 Runden geschafft!");
+      updateInfo("🎉 Glueckwunsch! Du hast alle 4 Runden geschafft!");
       document.getElementById("click-sound").play();
       gameStarted = false;
       
@@ -255,9 +256,14 @@ function handleUserInput(i) {
         noteContainer.innerHTML = '';
       }
       
+      // Gewinn-Sequenz abspielen
+      setTimeout(() => {
+        playVictorySequence();
+      }, 1000);
+      
       setTimeout(() => {
         gameOver(true);
-      }, 2000);
+      }, 4000); // Kürzer warten für die schnellere Gewinn-Sequenz
       return;
     }
     
@@ -337,3 +343,37 @@ function restartGame() {
     noteContainer.innerHTML = '';
   }
 }
+
+function playVictorySequence() {
+  console.log("Gewinn-Sequenz wird abgespielt:", sequence);
+  
+  // Sequenz ohne Animation abspielen (da Cubes entfernt sind)
+  playVictorySequenceStep(0);
+}
+
+function playVictorySequenceStep(idx) {
+  if (idx >= sequence.length) {
+    return; // Sequenz fertig
+  }
+  
+  const n = sequence[idx];
+  const audio = document.getElementById(notes[n].audio);
+  
+  if (!audio) {
+    setTimeout(() => playVictorySequenceStep(idx + 1), 300);
+    return;
+  }
+  
+  // Stoppe alle anderen Töne
+  stopAllNoteSounds();
+  
+  // Ton abspielen
+  audio.currentTime = 0;
+  audio.play();
+  
+  // Nächsten Ton nach 0.5 Sekunden (schneller)
+  setTimeout(() => {
+    playVictorySequenceStep(idx + 1);
+  }, 500);
+}
+
