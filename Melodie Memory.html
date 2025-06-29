@@ -9,9 +9,6 @@
   <link rel="stylesheet" href="stylesheet.css">
 </head>
 <body>
-  <!-- Musik-Button auf der Webseite -->
-  <button id="music-button" onclick="toggleMusic()">🎵</button>
-
   <a-scene>
     <a-assets>
       <audio id="sound0" src="sounds/static_audio_voice_1.mp3" preload="auto"></audio>
@@ -19,8 +16,6 @@
       <audio id="sound2" src="sounds/static_audio_voice_3.mp3" preload="auto"></audio>
       <audio id="sound3" src="sounds/static_audio_voice_4.mp3" preload="auto"></audio>
       <audio id="sound4" src="sounds/static_audio_voice_5.mp3" preload="auto"></audio>
-
-      <audio id="background-music" src="sounds/static_audio_bg.mp3" preload="auto"></audio>
       
       <audio id="click-sound" src="sounds/ui-pop-sound-316482.mp3"></audio>
       <audio id="fail-sound" src="sounds/wrong-47985.mp3"></audio>
@@ -41,9 +36,9 @@
 
     <!-- Start-Menü -->
     <a-entity id="menu" position="0 2 -3" visible="true">
-      <a-plane id="btn-start" class="interactive" color="#28a" width="1.4" height="0.45" position="0 0 0">
-        <a-text value="Spiel starten" align="center" position="0 0 0.01" color="#FFF"></a-text>
-      </a-plane>
+      <a-box id="btn-start" class="interactive" color="#28a" width="1.4" height="0.45" depth="0.1" position="0 0 0">
+        <a-text value="Spiel starten" align="center" position="0 0 0.06" color="#FFF"></a-text>
+      </a-box>
     </a-entity>
     
     <!-- Scoreboard (im Spiel sichtbar) -->
@@ -56,9 +51,9 @@
     <!-- Endbildschirm / Restart -->
     <a-entity id="endScreen" position="0 1.5 -3" visible="false">
       <a-text id="endText" value="Game Over!" align="center" position="0 0.3 0" color="white"></a-text>
-      <a-plane id="btn-restart" class="interactive" color="#444" width="1.2" height="0.3" position="0 -0.2 0">
-        <a-text value="Nochmal spielen" align="center" position="0 0 0.01" color="#FFF"></a-text>
-      </a-plane>
+      <a-box id="btn-restart" class="interactive" color="#444" width="1.2" height="0.3" depth="0.1" position="0 -0.2 0">
+        <a-text value="Nochmal spielen" align="center" position="0 0 0.06" color="#FFF"></a-text>
+      </a-box>
     </a-entity>
     
     <!-- Noten-Container -->
