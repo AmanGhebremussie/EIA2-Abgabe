@@ -42,6 +42,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const artistName = document.querySelector('#artist-name');
   const cover = document.querySelector('#cover');
   const realAudio = document.querySelector('#real-audio');
+  // Globale Lautstärke auf 50%
+  realAudio.volume = 0.5;
 
   // Kuppel-Visualizer Setup
   const domeVisualizer = document.querySelector('#dome-visualizer');
@@ -57,8 +59,8 @@ document.addEventListener('DOMContentLoaded', function() {
   let gazeTimers = new Map(); // Speichert Timer für jeden Balken
   let gazedBars = new Set(); // Speichert Balken, deren Farbe geändert wurde
 
-  // Effekt-Typen für Balken (z.B. Echo, Hall, Filter, Bass-Boost, Verzerrer)
-  const EFFECT_TYPES = ['echo', 'reverb', 'lowpass', 'bassboost', 'distortion'];
+  // Effekt-Typen für Balken (z.B. Hall, Filter, Bass-Boost)
+  const EFFECT_TYPES = ['reverb', 'lowpass', 'bassboost'];
 
   // Aktiver Effekt-Balken (Index)
   let activeEffectBarIndex = null;
@@ -66,15 +68,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // Hilfsfunktion: Effekt-Node erzeugen
   function createEffectNode(type, ctx) {
     switch(type) {
-      case 'echo': {
-        const delay = ctx.createDelay();
-        delay.delayTime.value = 0.25;
-        const feedback = ctx.createGain();
-        feedback.gain.value = 0.3;
-        delay.connect(feedback);
-        feedback.connect(delay);
-        return { input: delay, output: delay };
-      }
       case 'reverb': {
         // Einfaches Reverb mit ConvolverNode (leeres Impuls-Response für Demo)
         const convolver = ctx.createConvolver();
@@ -91,22 +84,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const filter = ctx.createBiquadFilter();
         filter.type = 'lowshelf';
         filter.frequency.value = 350;
-        filter.gain.value = 0;
+        filter.gain.value = -6;
         return { input: filter, output: filter };
-      }
-      case 'distortion': {
-        const distortion = ctx.createWaveShaper();
-        function makeDistortionCurve(amount) {
-          const n_samples = 44100, curve = new Float32Array(n_samples);
-          for (let i = 0; i < n_samples; ++i) {
-            let x = i * 2 / n_samples - 1;
-            curve[i] = ((3 + amount) * x * 20 * Math.PI / 180) / (Math.PI + amount * Math.abs(x));
-          }
-          return curve;
-        }
-        distortion.curve = makeDistortionCurve(400);
-        distortion.oversample = '4x';
-        return { input: distortion, output: distortion };
       }
       default:
         return null;
@@ -279,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Song laden
   function loadSong(index) {
     const song = playlist[index];
-    audioEntity.setAttribute('sound', `src: url(${song.src}); autoplay: false; volume: 1`);
+    audioEntity.setAttribute('sound', `src: url(${song.src}); autoplay: false; volume: 0.5`);
     realAudio.src = song.src;
     songTitle.setAttribute('value', song.title);
     artistName.setAttribute('value', song.artist);
@@ -633,12 +612,17 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!effect) return;
     // Audio-Kette: srcNode -> effect -> analyser -> destination
     try {
-      // Vorherige Verbindungen trennen
+      // Vorher ALLE Verbindungen trennen, damit nie mehrere Filter gleichzeitig aktiv sind
       try { srcNode.disconnect(); } catch(e) {}
       try { analyser.disconnect(); } catch(e) {}
-      if (bar.effectNode && bar.effectNode.output) {
-        try { bar.effectNode.output.disconnect(); } catch(e) {}
-      }
+      // Alle bisherigen Effekt-Nodes trennen
+      bars.forEach(b => {
+        if (b.effectNode && b.effectNode.output) {
+          try { b.effectNode.output.disconnect(); } catch(e) {}
+        }
+        b.effectActive = false;
+        b.effectNode = null;
+      });
       srcNode.connect(effect.input);
       effect.output.connect(analyser);
       analyser.connect(audioCtx.destination);
@@ -655,9 +639,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const bar = bars[index];
     if (!bar.effectActive || !bar.effectNode) return;
     try {
-      // Effekt-Node aus der Kette entfernen
-      srcNode.disconnect();
-      if (bar.effectNode.output) bar.effectNode.output.disconnect();
+      // Effekt-Node aus der Kette entfernen und ALLE Verbindungen zurücksetzen
+      try { srcNode.disconnect(); } catch(e) {}
+      try { analyser.disconnect(); } catch(e) {}
+      if (bar.effectNode && bar.effectNode.output) {
+        try { bar.effectNode.output.disconnect(); } catch(e) {}
+      }
       srcNode.connect(analyser);
       analyser.connect(audioCtx.destination);
       bar.effectNode = null;
